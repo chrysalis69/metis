@@ -1,0 +1,38 @@
+<html>
+	<head>
+		{# Load the tag library #}
+		{% load bootstrap3 %}
+		{% load static %}
+	
+		{# Load CSS and JavaScript #}
+		{% bootstrap_css %}
+		<script src="{% bootstrap_jquery_url %}"></script>
+		{% bootstrap_javascript %}
+		<script src="{% static "js/bootstrap-datepicker.js" %}"></script>
+		<script src="{% static "js/metis.js" %}"></script>
+		<script src="{% static "js/d3pie.min.js" %}"></script>
+		<script src="{% static "js/odometer.min.js" %}"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"></script>
+		<link href="{% static "css/bootstrap-datepicker3.min.css" %}" rel="stylesheet">
+		<link href="{% static "css/metis.css" %}" rel="stylesheet">
+		<link href="{% static "css/odometer.css" %}" rel="stylesheet">
+		<link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<div class="navbar-brand">Metis</div>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<div class="content-body">
+        			{% block content %}
+        			{% endblock %}
+			</div>
+		</div>
+	</body>
+</html>

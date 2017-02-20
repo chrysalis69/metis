@@ -1,0 +1,132 @@
+{% extends 'usage/base.html' %}
+
+{% block content %}
+{% load bootstrap3 %}
+
+<h1>Usage</h1>
+<div class="panel panel-default" id="overviewPanel">
+	<div class="panel-heading"><h3 class="panel-title">Overview</h3></div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-3"><div id="vCPUPie"></div></div>
+			<div class="col-md-3"><div id="memPie"></div></div>
+			<div class="col-md-3 center-block text-center ticker-padding"><h4>Active Instances</h4><h1 id="activeInstances" class="odometer">0</h1></div>
+			<div class="col-md-3 center-block text-center ticker-padding"><h4>Hypervisor hosts</h4><h1 id="hypervisorCount" class="odometer">0</div></div>
+		</div>
+	</div>
+</div>
+<div class="panel panel-default" id="computePanel">
+	<div class="panel-heading"><h3 class="panel-title">Compute</h3></div>
+	<div class="panel-body">
+{% if time_range %}
+<form action="?" method="get" id="dateForm" class="form-inline">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="input-group input-daterange">
+				<input id="dateStart" type="text" class="form-control" data-provide="datepicker-inline" data-date-format="yyyy-mm-dd" value="{{ time_range.from }}">
+				<div class="input-group-addon">to</div>
+				<input id="dateEnd" type="text" class="form-control" data-provide="datepicker-inline" data-date-format="yyyy-mm-dd" value="{{ time_range.to }}">
+			</div>
+		</div>
+		<div class="col-md-6">
+			<button class="btn btn-primary">Submit</button>
+				<small>The date should be in YYYY-mm-dd format.</small>
+		</div>
+	</div>
+</form>
+{% endif %}
+
+<table id="usageTable" class="table">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+	</div>
+</div>
+<div class="panel panel-default" id="cinderPanel">
+	<div class="panel-heading"><h3 class="panel-title">Storage (Cinder)</h3></div>
+	<div class="panel-body">
+<table id="cinderTable" class="table">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	$.ajax({
+		url: document.URL.replace("/usage/","/usage/api/compute/")
+	}).done(function(data){
+		$("#usageTable").DataTable({
+			data: data,
+			columns: [
+				{ 
+					"data": "tenant_id", 
+					"title": "Tenant ID", 
+					render: function(data, type, full, meta){
+						return '<a href="'+document.URL+''+data+'/">'+data+'</a>';
+					} 
+				},{ 
+					"data": "total_memory_mb_usage", 
+					"title": "Memory Hours (MB)",
+					"render": render_to_fixed_0,
+					"createdCell": align_cell_right
+				},{ 
+					"data": "total_vcpus_usage", 
+					"title": "vCPUs",
+					"render": render_to_fixed_0,
+					"createdCell": align_cell_right
+				},{ 
+					"data": "total_hours", 
+					"title": "Total Hours",
+					"render": render_to_fixed_0,
+					"createdCell": align_cell_right
+				},{ 
+					"data": "total_local_gb_usage", 
+					"title": "Local Disk (GB)", 
+					"render": render_to_fixed_0,
+					"createdCell": align_cell_right
+				},
+			],
+			dom: '<"top"<"pull-left"f><"pull-right"i>>rt<"bottom"<"pull-left"l><"pull-right"p>><"clearfix">'
+		});
+	});	
+	$.ajax({
+		url: document.URL.replace(/\/usage\/.*/,"/usage/api/volumes/")
+	}).done(function(data){
+		$("#cinderTable").DataTable({
+			data: data,
+			columns: [{
+				"data": "id",
+				"title": "Volume ID"
+			},{
+				"data": "status",
+				"title": "Sstatus"
+			},{
+				"data": "os-vol-tenant-attr:tenant_id",
+				"title": "Tenant ID"
+			},{
+				"data": "size",
+				"title": "Size GB",
+				"createdCell": align_cell_right
+			}],
+			dom: '<"top"<"pull-left"f><"pull-right"i>>rt<"bottom"<"pull-left"l><"pull-right"p>><"clearfix">'
+		});
+	});
+	$.ajax({
+		url: document.URL.replace(/\/usage\/.*/,"/usage/api/hypervisor_stats/")
+	}).done(function(data){
+		var cpu_pie = draw_pie("vCPUPie", "vCPUs", data.vcpus_used, data.vcpus);
+		var mem_pie = draw_pie("memPie", "Memory (MB)", data.memory_mb_used, data.memory_mb);
+		$("#activeInstances").html(data.running_vms);
+		$("#hypervisorCount").html(data.count);
+	});
+	$("#dateForm").submit(function(event){
+		$("#dateForm").attr("action", "/usage/" + $("#dateStart")[0].value + "/" + $("#dateEnd")[0].value + "/") 
+	});
+}); 
+</script>
+{% endblock %}

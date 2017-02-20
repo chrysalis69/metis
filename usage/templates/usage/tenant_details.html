@@ -1,0 +1,58 @@
+{% extends 'usage/base.html' %}
+
+{% block content %}
+
+<table id="usageTable" class="table">
+	<thead>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+<script>
+$(document).ready(function() {
+	$.ajax({
+		url: document.URL.replace("/usage/","/usage/api/compute/")
+	}).done(function(data){
+		$("#usageTable").DataTable({
+			data: data.server_usages,
+			columns: [
+				{ 
+					"data": "name", 
+					"title": "Name" 
+				},{ 
+					"data": "state", 
+					"title": "State" 
+				},{ 
+					"data": "flavor", 
+					"title": "Flavor"
+				},{ 
+					"data": "vcpus", 
+					"title": "vCPUs", 
+					"type": "num",
+					"createdCell": align_cell_right
+				},{ 
+					"data": "memory_mb", 
+					"title": "Memory (MB)", 
+					"createdCell": align_cell_right
+				},{ 
+					"data": "local_gb", 
+					"title": "Local Disk (GB)", 
+					"createdCell": align_cell_right
+				},{ 
+					"data": "uptime", 
+					"title": "Uptime", 
+					"createdCell": align_cell_right,
+					"render": render_seconds
+				},{ 
+					"data": "started_at", 
+					"title": "Started at", 
+					"type": "date",
+					"render": render_date
+				}
+			],
+		        dom: '<"top"if>rt<"bottom"lp><"clear">'
+		});
+	});	
+}); 
+</script>
+{% endblock %}
