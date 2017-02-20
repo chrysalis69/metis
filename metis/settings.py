@@ -123,8 +123,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 KEYSTONE_CREDENTIALS = {
-          'username': '',
-          'password': '',
-          'auth_url': '',
-          'tenant_name': ''
+          'username': os.environ['METIS_KEYSTONE_USERNAME'],
+          'password': os.environ['METIS_KEYSTONE_PASSWORD'],
+          'auth_url': os.environ['METIS_KEYSTONE_AUTH_URL'],
+          'tenant_name': os.environ['METIS_KEYSTONE_TENANT_NAME']
         }
