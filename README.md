@@ -13,5 +13,5 @@ METIS_KEYSTONE_TENANT_NAME=
 ```
 2. Run docker providing the env file
 ```
-docker run --env_file <my_envfile.env> -p 8000:8000 chrysalis69/metis
+docker run --env-file <my_envfile.env> -p 8000:8000 chrysalis69/metis
 ```
